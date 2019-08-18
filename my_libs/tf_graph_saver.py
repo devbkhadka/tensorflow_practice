@@ -11,11 +11,11 @@ class ScalerGraphSaver():
         root_dir = path.join("tf_logs",dir_name)
         now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
         self.log_dir = "{}/run_{}/".format(root_dir, now)
-        self.mse_summary = tf.summary.scalar("MSE", scaler)
+        self.mse_summary = tf.compat.v1.summary.scalar("MSE", scaler)
         
         
     def __enter__(self):
-        self.file_writer = tf.summary.FileWriter(self.log_dir, tf.get_default_graph())
+        self.file_writer = tf.compat.v1.summary.FileWriter(self.log_dir, tf.get_default_graph())
         return self
     
     def __exit__(self, type_, value, traceback):
