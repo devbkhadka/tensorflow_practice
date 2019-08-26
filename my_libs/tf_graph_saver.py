@@ -4,14 +4,14 @@ import tensorflow as tf
 
 class ScalerGraphSaver():
     '''
-    class logs graph summary in a directory which can be viewed using tensorboard command
+    This class logs graph summary in a directory which can be viewed using tensorboard command
     tensorboard --logdir <dir path>
     '''
-    def __init__(self, dir_name, scaler):
+    def __init__(self, dir_name):
         root_dir = path.join("tf_logs",dir_name)
         now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
         self.log_dir = "{}/run_{}/".format(root_dir, now)
-        self.mse_summary = tf.compat.v1.summary.scalar("MSE", scaler)
+        self.scalars = {}
         
         
     def __enter__(self):
@@ -21,8 +21,39 @@ class ScalerGraphSaver():
     def __exit__(self, type_, value, traceback):
         self.file_writer.close()
         
-        
-    def log_summary(self,step, feed_dict=None):
-        mse_str = self.mse_summary.eval(feed_dict=feed_dict)
+    
+    def log_summary(self, name, scalar, step, feed_dict=None):
+        scalar_summary = self.scalars.get(name, tf.compat.v1.summary.scalar(name, scalar))
+        self.scalars[name] = scalar_summary
+        mse_str = scalar_summary.eval(feed_dict=feed_dict)
         self.file_writer.add_summary(mse_str, step)
-        return mse_str
+        
+ 
+
+class ScalerGraphSaver2():
+    '''
+    This class logs graph summary in a directory which can be viewed using tensorboard command
+    tensorboard --logdir <dir path>
+    '''
+    def __init__(self, dir_name):
+        root_dir = path.join("tf_logs",dir_name)
+        now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+        self.log_dir = "{}/run_{}/".format(root_dir, now)
+        self.scalars = {}
+        
+        
+    def __enter__(self):
+        self.file_writer = tf.compat.v1.summary.FileWriter(self.log_dir, tf.get_default_graph())
+        return self
+    
+    def __exit__(self, type_, value, traceback):
+        self.file_writer.close()
+        
+    
+    def get_summary_op(self, name, scalar):
+        return tf.compat.v1.summary.scalar(name, scalar)
+        
+    def log_summary(self, summary_text, step):
+        self.file_writer.add_summary(summary_text, step)
+        
+        
