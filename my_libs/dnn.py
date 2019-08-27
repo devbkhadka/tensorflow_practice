@@ -141,8 +141,8 @@ class DNN_Classifier(BaseEstimator, TransformerMixin):
         
     
     def fit(self,x,y,x_val,y_val):
-        n_epoches = 500
-        max_epoches_wo_progress = 100  
+        n_epoches = 1000
+        max_epoches_wo_progress = 200  
         
         best_score=0
         best_epoch=0
@@ -175,7 +175,7 @@ class DNN_Classifier(BaseEstimator, TransformerMixin):
                     graph_saver.log_summary(loss_summary_text, epoch)
                     graph_saver.log_summary(score_summary_text, epoch)
                     
-                    if epoch%50 == 0:
+                    if epoch%20 == 0:
                         print("epoch %d, score %f, loss %f"%(epoch, score, loss))
 
                     if score > best_score:
