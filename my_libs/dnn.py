@@ -141,10 +141,11 @@ class DNN_Classifier(BaseEstimator, TransformerMixin):
         
     
     def fit(self,x,y,x_val,y_val):
-        n_epoches = 1000
-        max_epoches_wo_progress = 200  
+        n_epoches = 500
+        max_epoches_wo_progress = 50  
         
-        best_score=0
+        best_loss=np.float("inf")
+        best_accuracy = 0
         best_epoch=0
         
         self._initialize_session_and_graph() 
@@ -178,8 +179,9 @@ class DNN_Classifier(BaseEstimator, TransformerMixin):
                     if epoch%20 == 0:
                         print("epoch %d, score %f, loss %f"%(epoch, score, loss))
 
-                    if score > best_score:
-                        best_score = score
+                    if loss < best_loss:
+                        best_loss = loss
+                        best_accuracy = score
                         best_epoch = epoch
                         self._save_params()
                     elif (epoch - best_epoch)>max_epoches_wo_progress:
@@ -188,8 +190,8 @@ class DNN_Classifier(BaseEstimator, TransformerMixin):
                 
             self._restore_params()
             print("Reverting back to epoch %d \
-                    with %f score" %(best_epoch, best_score))
-            self._score = best_score 
+                    with loss: %f, val accuracy %f" %(best_epoch, best_loss, best_accuracy))
+            self._score = best_loss 
             return self
             
                     
