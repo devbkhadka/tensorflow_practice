@@ -1,2 +1,2 @@
-model_checkpoint_path: "Mnist-0to4-best_batch_norm"
-all_model_checkpoint_paths: "Mnist-0to4-best_batch_norm"
+model_checkpoint_path: "Mnist-0to4-best1"
+all_model_checkpoint_paths: "Mnist-0to4-best1"

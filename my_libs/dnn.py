@@ -9,13 +9,14 @@ def get_leaky_relu(alpha):
     return lambda z, name=None: tf.maximum(alpha*z,z, name=name)
     
 
-def get_connected_layers(x, n_hidden_layers, n_neurons, n_ouputs, activation=tf.nn.elu,
+def get_connected_layers(x, n_hidden_layers, n_neurons, n_ouputs=None, activation=tf.nn.elu,
                                    batch_norm_momentum=None, dropout_rate=None, is_training=None):
     
 
     initializer = he_initializer()
     
     with tf.name_scope("DNN"):
+        print(tf.get_variable_scope().name)
         inputs = x
         for l in range(n_hidden_layers):
             if dropout_rate is not None:
@@ -25,15 +26,17 @@ def get_connected_layers(x, n_hidden_layers, n_neurons, n_ouputs, activation=tf.
                                   name=("dropout%d"%l))
                 
             inputs = tf.layers.dense(inputs, n_neurons, kernel_initializer=initializer,
-                           name="hidden%d"%(l+1), activation=activation)
+                           name="hidden%d"%(l+1))
             
             if batch_norm_momentum is not None:
                 inputs = tf.layers.batch_normalization(inputs, momentum=batch_norm_momentum,
                                 training=is_training)
             
             inputs = activation(inputs, name="hiden%d_out"%(l+1))
-            
-        output = tf.layers.dense(inputs, n_ouputs, name="output")
+        if n_ouputs==None:
+            output = inputs   
+        else:
+            output = tf.layers.dense(inputs, n_ouputs, name="output")
         
     return output
         
